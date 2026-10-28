@@ -6,6 +6,107 @@
     <title>ZeameBg</title>
     <link rel="stylesheet" href="remove.css">
     <link rel="icon" type="image/png" href="image/bgfac.png">
+
+
+
+<!-- Compare Images Modal -->
+<div id="compare-modal" class="compare-modal" hidden>
+    <div class="compare-panel" role="dialog"
+         aria-modal="true" aria-labelledby="compare-title">
+
+        <div class="compare-header">
+            <h2 id="compare-title">Compare Images</h2>
+            <button type="button" class="compare-close"
+                    aria-label="Close comparison">&times;</button>
+        </div>
+
+        <p class="compare-description">
+            Drag the slider to compare your original image
+            with the edited result.
+        </p>
+
+        <div class="compare-stage">
+            <img class="compare-before" alt="Original image">
+
+            <div class="compare-after-wrap">
+                <img class="compare-after" alt="Edited image">
+            </div>
+
+            <span class="compare-label compare-label-before">Before</span>
+            <span class="compare-label compare-label-after">After</span>
+
+            <div class="compare-divider">
+                <span>&#8596;</span>
+            </div>
+        </div>
+
+        <input class="compare-range" type="range"
+               min="0" max="100" value="50"
+               aria-label="Compare original and edited images">
+    </div>
+</div>
+
+
+
+<!-- Crop & Resize Editor -->
+<div id="crop-modal" class="crop-modal" hidden>
+    <div class="crop-panel" role="dialog"
+         aria-modal="true" aria-labelledby="crop-title">
+
+        <div class="crop-header">
+            <h2 id="crop-title">Crop & Resize</h2>
+            <button type="button" id="crop-close"
+                    class="crop-close" aria-label="Close">&times;</button>
+        </div>
+
+        <p class="crop-description">
+            Drag across the image to select the area you want to keep.
+        </p>
+
+        <div id="crop-stage" class="crop-stage">
+            <img id="crop-image" alt="Image to crop">
+            <div id="crop-selection" class="crop-selection" hidden></div>
+        </div>
+
+        <div class="crop-controls">
+            <label>
+                Crop ratio
+                <select id="crop-ratio">
+                    <option value="free">Free</option>
+                    <option value="1:1">Square (1:1)</option>
+                    <option value="4:3">Landscape (4:3)</option>
+                    <option value="3:4">Portrait (3:4)</option>
+                    <option value="16:9">Widescreen (16:9)</option>
+                    <option value="9:16">Vertical (9:16)</option>
+                </select>
+            </label>
+
+            <label>
+                Output width (px)
+                <input id="crop-width" type="number"
+                       min="1" max="10000" value="1080">
+            </label>
+
+            <label>
+                Output height (px)
+                <input id="crop-height" type="number"
+                       min="1" max="10000" value="1080">
+            </label>
+        </div>
+
+        <p id="crop-status" class="crop-status" aria-live="polite">
+            Select an area of the image to crop.
+        </p>
+
+        <div class="crop-actions">
+            <button type="button" id="crop-reset">Reset Selection</button>
+            <button type="button" id="crop-apply">Apply Crop & Resize</button>
+        </div>
+    </div>
+</div>
+
+
+
     <script src="remove.js" defer></script>
 </head>
 <body>
@@ -85,13 +186,14 @@
 <main class="mained">
 
     <div class="tools">
-        <button id="remove-bg" class="whatq">
+       
+<button id="remove-bg" class="whatq">
          <img src="image/personbg.png" alt=""  class="my-lady">    
         <span class="animal">Remove BG</span></button>
-
        
 <!-- Change Color button -->
 <button type="button" id="open-color-picker" class="whatq">
+    <img src="image/pallete.png" alt=""  class="my-lady">
     <span class="animal">Change Color</span>
 </button>
 
@@ -110,8 +212,18 @@
         <label for="bg-color">Select a color</label>
 
         <div class="color-input-row">
-            <input type="color" id="popup-color" value="#ffffff">
+            
+<label for="popup-color" class="color-picker-button">
+    <img src="image/palette.png" alt="Choose a color">
+</label>
+
+<input type="color" id="popup-color" value="#ffffff" hidden>
+
+            <label for="popup-color" class="lesn"></label>
             <input type="text" id="color-hex" value="#FFFFFF" maxlength="7" aria-label="HEX color code">
+            <label for="color-hex" class="meyz">
+
+            </label>
         </div>
 
         <p class="color-subtitle">Choose a preset</p>
@@ -140,16 +252,52 @@
             <span class="animal">
             Replace BG
         </span></button>
+
+
+        <!-- Compare Images button -->
+<button type="button" id="compare-images" class="whatq">
+    <img src="image/slideba.png" alt=""  class="my-lady">
+    <span class="animal">Compare Images</span>
+</button>
+
+<!-- Crop & Resize button -->
+<button type="button" id="crop-resize" class="whatq">
+    <img src="image/crop.png" alt=""  class="my-lady">
+    <span class="animal">Crop & Resize</span>
+</button>
+
+<!-- Erase & Restore button -->
+<button type="button" id="erase-restore" class="whatq">
+    <img src="image/paintbrush.png" alt=""  class="my-lady">
+    <span class="animal">Erase & Restore</span>
+</button>
+
     </div>
 
-    <div class="preview">
-        <img id="jiggy" alt="Your uploaded image">
-    </div>
-<input type="file" id="well-well" accept="image/*" hidden>
-   <label for="well-well">
-        <img src="image/addblack.png" alt="" width="30px">
-   </label>
 
+<div class="preview">
+    <img id="jiggy" alt="Your uploaded image">
+</div>
+
+<div class="image-upload-row">
+    <div class="image-thumbnail" id="image-thumbnail">
+        <img id="thumbnail-preview" alt="Current image preview" hidden>
+        <span id="thumbnail-placeholder">No image</span>
+    </div>
+
+    <div class="upload-controls">
+        <input type="file" id="well-well" accept="image/*" hidden>
+
+        <label for="well-well" class="well-well">
+            <span class="animal">Add Image</span>
+        </label>
+        <span class="thumbnail-caption">Current image</span>
+    </div>
+</div>
+
+    <button id="remove-bg" class="whatq">
+         <img src="image/personbg.png" alt=""  class="my-lady">    
+        <span class="animal">Remove BG</span></button>
     <div class="well-nam">
         <a id="download" hidden class="well">Download Image</a>
     </div>
