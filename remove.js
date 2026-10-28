@@ -1,5 +1,5 @@
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://zearome-zeamebg.ms.fun";
 
 // Existing page elements
 const photoData = sessionStorage.getItem("uploadeImage");
