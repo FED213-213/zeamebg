@@ -183,14 +183,39 @@ redoActionButton?.addEventListener("click", redoLastAction);
 
 updateHistoryButtons();
 
+
 const DB_STORE = "images";
 
 function openDatabase() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open("ZeameBGImageLibrary");
+        // Version 1 creates the database for a new visitor.
+        // Version 2 also upgrades existing databases missing the store.
+        const request = indexedDB.open("ZeameBGImageLibrary", 2);
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+
+            if (!db.objectStoreNames.contains(DB_STORE)) {
+                db.createObjectStore(DB_STORE, {
+                    keyPath: "id"
+                });
+            }
+        };
 
         request.onsuccess = () => {
-            resolve(request.result);
+            const db = request.result;
+
+            if (!db.objectStoreNames.contains(DB_STORE)) {
+                db.close();
+                reject(
+                    new Error(
+                        'The database opened, but the "images" store is missing.'
+                    )
+                );
+                return;
+            }
+
+            resolve(db);
         };
 
         request.onerror = () => {
@@ -202,11 +227,14 @@ function openDatabase() {
 
         request.onblocked = () => {
             reject(
-                new Error("Opening the image database was blocked.")
+                new Error(
+                    "Database upgrade blocked. Close other tabs of this website and reload."
+                )
             );
         };
     });
 }
+
 
 
 
