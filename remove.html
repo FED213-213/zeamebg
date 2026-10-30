@@ -1,308 +1,695 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZeameBg</title>
-    <link rel="stylesheet" href="remove.css">
-    <link rel="icon" type="image/png" href="image/bgfac.png">
-
-
-
-<!-- Compare Images Modal -->
-<div id="compare-modal" class="compare-modal" hidden>
-    <div class="compare-panel" role="dialog"
-         aria-modal="true" aria-labelledby="compare-title">
-
-        <div class="compare-header">
-            <h2 id="compare-title">Compare Images</h2>
-            <button type="button" class="compare-close"
-                    aria-label="Close comparison">&times;</button>
-        </div>
-
-        <p class="compare-description">
-            Drag the slider to compare your original image
-            with the edited result.
-        </p>
-
-        <div class="compare-stage">
-            <img class="compare-before" alt="Original image">
-
-            <div class="compare-after-wrap">
-                <img class="compare-after" alt="Edited image">
-            </div>
-
-            <span class="compare-label compare-label-before">Before</span>
-            <span class="compare-label compare-label-after">After</span>
-
-            <div class="compare-divider">
-                <span>&#8596;</span>
-            </div>
-        </div>
-
-        <input class="compare-range" type="range"
-               min="0" max="100" value="50"
-               aria-label="Compare original and edited images">
-    </div>
-</div>
-
-
-
-<!-- Crop & Resize Editor -->
-<div id="crop-modal" class="crop-modal" hidden>
-    <div class="crop-panel" role="dialog"
-         aria-modal="true" aria-labelledby="crop-title">
-
-        <div class="crop-header">
-            <h2 id="crop-title">Crop & Resize</h2>
-            <button type="button" id="crop-close"
-                    class="crop-close" aria-label="Close">&times;</button>
-        </div>
-
-        <p class="crop-description">
-            Drag across the image to select the area you want to keep.
-        </p>
-
-        <div id="crop-stage" class="crop-stage">
-            <img id="crop-image" alt="Image to crop">
-            <div id="crop-selection" class="crop-selection" hidden></div>
-        </div>
-
-        <div class="crop-controls">
-            <label>
-                Crop ratio
-                <select id="crop-ratio">
-                    <option value="free">Free</option>
-                    <option value="1:1">Square (1:1)</option>
-                    <option value="4:3">Landscape (4:3)</option>
-                    <option value="3:4">Portrait (3:4)</option>
-                    <option value="16:9">Widescreen (16:9)</option>
-                    <option value="9:16">Vertical (9:16)</option>
-                </select>
-            </label>
-
-            <label>
-                Output width (px)
-                <input id="crop-width" type="number"
-                       min="1" max="10000" value="1080">
-            </label>
-
-            <label>
-                Output height (px)
-                <input id="crop-height" type="number"
-                       min="1" max="10000" value="1080">
-            </label>
-        </div>
-
-        <p id="crop-status" class="crop-status" aria-live="polite">
-            Select an area of the image to crop.
-        </p>
-
-        <div class="crop-actions">
-            <button type="button" id="crop-reset">Reset Selection</button>
-            <button type="button" id="crop-apply">Apply Crop & Resize</button>
-        </div>
-    </div>
-</div>
-
-
-
-    <script src="remove.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZeameBg</title>
+<link rel="stylesheet" href="remove.css">
+<link rel="icon" type="image/png" href="image/bgfac.png">
+<script src="remove.js" defer></script>
 </head>
+
 <body>
-        <header>
+
+    <!-- Header and Navigation -->
+    <header>
         <nav>
-            <img src="image/zeamebg.png" alt="" width="160px">
-        <div class="container">
-           <div class="tool">
-             <div class="topian">
-                <p class="hwat">Uploads</p>
-            <div class="why"><img src="https://cardtonic.com/svg/caret-down.svg" alt=""></div>
-            </div>
+            <img src="image/zeamebg.png" alt="ZeameBG" width="160">
 
+            <div class="container">
 
-
-
-                </div>
-            
-                 <div class="tool">
-             <div class="topian">
-                <p class="hwat">Tools</p>
-            <div class="why"><img src="https://cardtonic.com/svg/caret-down.svg" alt=""></div>
-            </div>
-
-
-
-                
+                <div class="tool">
+                    <a href="index.html">
+                        <div class="topian">
+                            <p class="hwat">Home</p>
+                            <div class="why">
+                                <img src="" alt="">
+                            </div>
+                        </div>
+                    </a>
                 </div>
 
-             <div class="topian">
-                <a href="" class="nawa">
-                    <p class="hwat">Explore</p></div>
-                </a>
-            
+                <div class="tool">
+                    <div class="topian">
+                        <p class="hwat">Tools</p>
+                        <div class="why">
+                            <img src="" alt="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="topian">
+                    <a href="" class="nawa">
+                        <p class="hwat">Explore</p>
+                    </a>
+                </div>
+
             </div>
 
-                <div class="whah pysics">    
+            <div class="whah pysics">
 
                 <div class="menu">
                     <div class="tool baka">
-             <div class="ware">
-                     <img src="image/menu-black.png" alt="" width="25px">
-                   </div>
-                 <div class="monkey">
+                        <div class="ware">
+                            <img src="image/menu-black.png"
+                                 alt="Menu"
+                                 width="25">
+                        </div>
+
+                        <div class="monkey"></div>
                     </div>
                 </div>
-                   </div>
-                
-                   <div class="hide">
-                     <a href="https://dashboard.cardtonic.com/signin">
-                     <div class="beast">
-                 <p class="fire ago">Log In</p></div>
-                 </a>
-                 </div>
 
-                 <div class="hide">
-                     <a href="https://dashboard.cardtonic.com/signin">
-                     <div class="siga">
-                 <p class="fire">Sign Up</p></div>
-                 </a>
-                 </div>
-                 </div>
-                  
-            </nav>                
+                <div class="hide">
+                    <a href="">
+                        <div class="beast">
+                            <p class="fire ago">Log In</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="hide">
+                    <a href="">
+                        <div class="siga">
+                            <p class="fire">Sign Up</p>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+        </nav>
     </header>
+
+
+    <!-- Page Introduction -->
     <section class="solved">
+
         <div class="parce">
             <div class="math">
-            <img src="image/bgfac.png" alt="" width="30px">
-            <span class="frog">A Cleaner Cut In Seconds.</span>
-            <div class="with"><img src="image/arrowhite.png" alt="" width="20px" class="rota"></div>
+                <img src="image/bgfac.png" alt="" width="30">
+
+                <span class="frog">A Cleaner Cut In Seconds.</span>
+
+                <div class="with">
+                    <img src="image/arrowhite.png"
+                         alt=""
+                         width="20"
+                         class="rota">
+                </div>
+            </div>
         </div>
-        
+
+
+        <!-- Main Image Editor -->
 
 <section class="winner">
-           
+
 <main class="mained">
 
-    <div class="tools">
-       
-<button id="remove-bg" class="whatq">
-         <img src="image/personbg.png" alt=""  class="my-lady">    
-        <span class="animal">Remove BG</span></button>
-       
-<!-- Change Color button -->
-<button type="button" id="open-color-picker" class="whatq">
-    <img src="image/pallete.png" alt=""  class="my-lady">
-    <span class="animal">Change Color</span>
-</button>
+                <!-- Editor Toolbar -->
+<div class="tools">
 
-<!-- Hidden native color input -->
+    <button type="button" id="remove-bg" class="whatq">
+        <img src="image/personbg.png" alt="" class="my-lady">
+<span class="animal">Remove BG</span> </button>
+
+
+    <!-- Change Background Color -->
+    <button type="button" id="open-color-picker" class="whatq">
+
+   <img src="image/pallete.png" alt="" class="my-lady">
+<span class="animal">Change Color</span> </button>
+
 <input type="color" id="bg-color" value="#ffffff" hidden>
 
-<!-- Color picker popup -->
+<!-- Color Picker Modal -->
 <div id="color-modal" class="color-modal" hidden>
-    <div class="color-panel" role="dialog" aria-modal="true" aria-labelledby="color-title">
 
-        <div class="color-header">
-            <h2 id="color-title">Choose a background color</h2>
-            <button type="button" id="close-color-picker" class="close-color" aria-label="Close">&times;</button>
+<div class="color-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="color-title">
+
+ <div class="color-header">
+<h2 id="color-title">
+    Choose a background color </h2>
+
+<button type="button"  id="close-color-picker" class="close-color" aria-label="Close"> &times;
+</button>
+    </div>
+
+    <label for="bg-color">Select a color</label>
+
+    <div class="color-input-row">
+
+<div class="custom-color-picker">
+    <!-- Color spectrum -->
+    <div id="color-spectrum"
+         class="color-spectrum"
+         role="application"
+         aria-label="Choose color saturation and brightness"
+         tabindex="0">
+        <div id="color-marker" class="color-marker"></div>
+    </div>
+
+    <!-- Hue slider -->
+    <label for="color-hue" class="picker-label">Hue</label>
+    <input type="range"
+           id="color-hue"
+           min="0"
+           max="360"
+           value="155"
+           aria-label="Choose hue">
+
+    <!-- Selected color preview -->
+    <div class="picker-preview-row">
+        <span id="picker-color-preview"></span>
+        <span id="picker-hex-preview">#FFFFFF</span>
+    </div>
+</div>
+
+<!-- HEX input: keep this outside the custom picker -->
+<input type="text"
+       id="color-hex"
+       value="#FFFFFF"
+       maxlength="7"
+       aria-label="HEX color code">
+
+        <label for="color-hex" class="meyz"></label>
+</div>     <p class="color-subtitle">Choose a preset</p>
+<div class="color-swatches">
+
+<button type="button"
+    class="swatch"
+    data-color="#FFFFFF"
+    style="background:#FFFFFF"
+    aria-label="White"></button>
+
+ <button type="button" class="swatch" data-color="#000000" style="background:#000000"
+aria-label="Black"></button>
+
+<button type="button" class="swatch"  data-color="#5F9D8A" style="background:#5F9D8A"
+ aria-label="Zeame green"></button>
+
+ <button type="button"
+        class="swatch"
+        data-color="#87CEEB"
+        style="background:#87CEEB"
+        aria-label="Sky blue"></button>
+
+<button type="button"
+         class="swatch"
+         data-color="#FFD700"
+        style="background:#FFD700"
+        aria-label="Gold"></button>
+
+<button type="button"
+         class="swatch"
+         data-color="#FFB6C1"
+         style="background:#FFB6C1"
+         aria-label="Pink"></button>
+
+<button type="button"
+         class="swatch"
+         data-color="#808080"
+        style="background:#808080"
+        aria-label="Gray"></button>
+
+ <button type="button"
+        class="swatch"
+        data-color="#90EE90"
+        style="background:#90EE90"
+        aria-label="Light green"></button>
+</div>
+
+<div class="color-actions">
+     <button type="button"
+        id="cancel-color"
+    class="color-cancel">
+    Cancel
+    </button>
+<button type="button" id="apply-color" class="color-apply">
+    Apply Color
+</button>
+</div>
+</div>
+</div>
+
+
+     <!-- Replace Background -->
+                    
+<!-- Replace Background button -->
+<button type="button" id="replace-bg" class="whatq">
+    <img src="image/mountainbg.png" alt="" class="my-lady">
+    <span class="animal">Replace BG</span>
+</button>
+
+<!-- Replace Background Modal -->
+<div id="replace-bg-modal" class="replace-bg-modal" hidden>
+    <div class="replace-bg-panel"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="replace-bg-title">
+
+        <div class="replace-bg-header">
+            <div>
+                <h2 id="replace-bg-title">Replace Background</h2>
+                <p>Choose a background for your image.</p>
+            </div>
+
+            <button type="button"
+                    id="close-replace-bg"
+                    class="close-color"
+                    aria-label="Close">
+                &times;
+            </button>
         </div>
 
-        <label for="bg-color">Select a color</label>
+        <!-- Choose where the background comes from -->
+        <div class="replace-bg-tabs">
+            <button type="button"
+                    class="replace-bg-tab active"
+                    data-bg-tab="gallery">
+                Explore backgrounds
+            </button>
 
-        <div class="color-input-row">
-            
-<label for="popup-color" class="color-picker-button">
-    <img src="image/pallete.png" alt="Choose a color">
-</label>
+            <button type="button"
+                    class="replace-bg-tab"
+                    data-bg-tab="upload">
+                Upload your own
+            </button>
+        </div>
 
-<input type="color" id="popup-color" value="#ffffff" hidden>
+        <!-- Unsplash-powered background search and gallery -->
+        <section id="bg-gallery-section" aria-labelledby="bg-gallery-title">
+            <h3 id="bg-gallery-title">Explore backgrounds</h3>
+            <p>Search for a scene or choose a category to find your new background.</p>
 
-            <label for="popup-color" class="lesn"></label>
-            <input type="text" id="color-hex" value="#FFFFFF" maxlength="7" aria-label="HEX color code">
-            <label for="color-hex" class="meyz">
+           
+<form id="bg-search-form" class="bg-search-form" role="search">
+    <label class="sr-only" for="bg-search-input">
+        Search backgrounds
+    </label>
 
+    <input
+        type="search"
+        id="bg-search-input"
+        name="query"
+        placeholder="Try “beach”, “studio” or “luxury office”"
+        autocomplete="off"
+        maxlength="100"
+    >
+
+    <button type="submit" id="bg-search-button">
+        Search
+    </button>
+</form>
+
+
+            <label for="bg-category">Or browse by category</label>
+            <select id="bg-category">
+                <option value="all">All backgrounds</option>
+                <option value="nature">Nature</option>
+                <option value="beach">Beach</option>
+                <option value="studio">Studio</option>
+                <option value="office">Office</option>
+                <option value="city">City</option>
+                <option value="abstract">Abstract</option>
+            </select>
+
+            <div id="bg-gallery" class="bg-gallery" aria-label="Background search results">
+                <!-- remove.js will insert Unsplash results here -->
+            </div>
+
+            <p id="bg-gallery-status" aria-live="polite" role="status">
+                Search for a background or choose a category.
+            </p>
+
+            <button type="button" id="bg-load-more" class="color-cancel" hidden>
+                Load more backgrounds
+            </button>
+
+            <p class="bg-attribution-note">
+                Photos provided by <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>.
+                Photographer credits will appear with the results.
+            </p>
+        </section>
+
+        <!-- Upload a background from the device -->
+        <section id="bg-upload-section" hidden>
+            <label for="replacement-bg-file" class="bg-upload-box">
+                <span class="animal">Choose a background image</span>
+                <span>JPG, PNG or WebP</span>
             </label>
-        </div>
 
-        <p class="color-subtitle">Choose a preset</p>
-        <div class="color-swatches">
-            <button type="button" class="swatch" data-color="#FFFFFF" style="background:#FFFFFF" aria-label="White"></button>
-            <button type="button" class="swatch" data-color="#000000" style="background:#000000" aria-label="Black"></button>
-            <button type="button" class="swatch" data-color="#5F9D8A" style="background:#5F9D8A" aria-label="Zeame green"></button>
-            <button type="button" class="swatch" data-color="#87CEEB" style="background:#87CEEB" aria-label="Sky blue"></button>
-            <button type="button" class="swatch" data-color="#FFD700" style="background:#FFD700" aria-label="Gold"></button>
-            <button type="button" class="swatch" data-color="#FFB6C1" style="background:#FFB6C1" aria-label="Pink"></button>
-            <button type="button" class="swatch" data-color="#808080" style="background:#808080" aria-label="Gray"></button>
-            <button type="button" class="swatch" data-color="#90EE90" style="background:#90EE90" aria-label="Light green"></button>
+            <input type="file"
+                   id="replacement-bg-file"
+                   accept="image/jpeg,image/png,image/webp"
+                   hidden>
+
+            <div id="uploaded-bg-preview" hidden>
+                <img id="uploaded-bg-image"
+                     alt="Selected replacement background">
+                <p id="uploaded-bg-name"></p>
+            </div>
+        </section>
+
+        <!-- Adjust the replacement background -->
+        <div class="replacement-bg-adjustments">
+            <h3>Background fit</h3>
+
+            <label for="replacement-bg-fit">How should it fit?</label>
+            <select id="replacement-bg-fit">
+                <option value="cover">Fill the canvas</option>
+                <option value="contain">Show the entire background</option>
+                <option value="stretch">Stretch to fit</option>
+            </select>
+
+            <button type="button"
+                    id="open-bg-crop"
+                    class="color-cancel">
+                Crop / resize background
+            </button>
         </div>
 
         <div class="color-actions">
-            <button type="button" id="cancel-color" class="color-cancel">Cancel</button>
-            <button type="button" id="apply-color" class="color-apply">Apply Color</button>
+            <button type="button"
+                    id="cancel-replace-bg"
+                    class="color-cancel">
+                Cancel
+            </button>
+
+            <button type="button"
+                    id="apply-replace-bg"
+                    class="color-apply">
+                Apply Background
+            </button>
         </div>
 
     </div>
 </div>
 
 
-        <button id="replace-bg" class="whatq">
-            <img src="image/mountainbg.png" alt=""  class="my-lady">
-            <span class="animal">
-            Replace BG
-        </span></button>
-
-
-        <!-- Compare Images button -->
+    <!-- Compare Images -->
 <button type="button" id="compare-images" class="whatq">
-    <img src="image/slideba.png" alt=""  class="my-lady">
-    <span class="animal">Compare Images</span>
-</button>
-
-<!-- Crop & Resize button -->
-<button type="button" id="crop-resize" class="whatq">
-    <img src="image/crop.png" alt=""  class="my-lady">
-    <span class="animal">Crop & Resize</span>
-</button>
-
-<!-- Erase & Restore button -->
-<button type="button" id="erase-restore" class="whatq">
-    <img src="image/paintbrush.png" alt=""  class="my-lady">
-    <span class="animal">Erase & Restore</span>
-</button>
-
-    </div>
+<img src="image/slideba.png" alt="" class="my-lady">
+<span class="animal">Compare Images</span></button>
 
 
-<div class="preview">
+<!-- Crop and Resize -->
+    <button type="button" id="crop-resize" class="whatq">
+<img src="image/crop.png" alt="" class="my-lady">
+<span class="animal">Crop &amp; Resize</span></button>
+
+
+<!-- Erase and Restore -->
+    <button type="button" id="erase-restore"class="whatq">
+
+    <img src="image/paintbrush.png" alt="" class="my-lady">
+    <span class="animal">Erase &amp; Restore</span> </button>
+ </div>
+
+
+<!-- Main Image Preview -->
+    <div class="preview">
     <img id="jiggy" alt="Your uploaded image">
+    
+<div id="processing-overlay" class="processing-overlay" hidden>
+    <div class="spinner" aria-hidden="true"></div>
+    <p id="processing-message" role="status" aria-live="polite">
+        Removing background…
+    </p>
+</div>
 </div>
 
-<div class="image-upload-row">
-    <div class="image-thumbnail" id="image-thumbnail">
-        <img id="thumbnail-preview" alt="Current image preview" hidden>
-        <span id="thumbnail-placeholder">No image</span>
+
+    <!-- Image Collection and Upload -->
+    <div class="image-upload-row">
+
+     <div class="image-thumbnail-list" id="image-thumbnail-list">
+    <!-- JavaScript adds image thumbnails here -->
     </div>
 
     <div class="upload-controls">
-        <input type="file" id="well-well" accept="image/*" hidden>
+<input type="file" id="well-well" accept="image/*"  hidden>
+ <label for="well-well" class="well-well">
+ <span class="animal">Add Image</span></label>
 
-        <label for="well-well" class="well-well">
-            <span class="animal">Add Image</span>
-        </label>
-        <span class="thumbnail-caption">Current image</span>
+<span class="thumbnail-caption">
+    Add another image
+     </span>
+
+<!-- Download Result -->
+<div class="well-nam" id="download-container">
+    <a id="download" hidden class="well">
+        Download Image
+    </a>
+</div>
+     
     </div>
+    </div>
+
+
+
+
+<div class="coconut">
+    <button type="button" id="cancel-action" class="whatq" hidden>
+        <img src="image/cancel.png" alt="" class="my-lady">
+        <span class="animal">Cancel Action</span>
+    </button>
+
+    <button type="button" id="redo-action" class="whatq" disabled>
+    <img src="image/rightdo.png" alt="" class="my-lady">
+    <span class="animal">Redo Action</span>
+</button>
+
+<button type="button" id="undo-action" class="whatq" disabled>
+    <img src="image/leftdo.png" alt="" class="my-lady">
+    <span class="animal">Undo Action</span>
+</button>
 </div>
 
-    <button id="remove-bg" class="whatq">
-         <img src="image/personbg.png" alt=""  class="my-lady">    
-        <span class="animal">Remove BG</span></button>
-    <div class="well-nam">
-        <a id="download" hidden class="well">Download Image</a>
-    </div>
-</main>
 
+
+
+<!-- Main Remove Background Button -->
+<button type="button" id="remove-bg-bottom" class="whatq">
+ <img src="image/personbg.png" alt="" class="my-lady">
+<span class="animal">Remove BG</span> </button>
+
+
+ </main>
 </section>
+</section>
+
+<!-- Compare Images Modal -->
+    <div id="compare-modal" class="compare-modal" hidden>
+
+    <div class="compare-panel" role="dialog" aria-modal="true" aria-labelledby="compare-title">
+    <div class="compare-header">
+    <h2 id="compare-title">Compare Images</h2>
+
+<button type="button" class="compare-close" aria-label="Close comparison">
+                    &times;
+                </button>
+            </div>
+
+            <p class="compare-description">
+                Drag the slider to compare your original image
+                with the edited result.
+            </p>
+
+            <div class="compare-stage">
+
+                <img class="compare-before" alt="Original image">
+
+                <div class="compare-after-wrap">
+                    <img class="compare-after" alt="Edited image">
+                </div>
+
+                <span class="compare-label compare-label-before">
+                    Before
+                </span>
+
+                <span class="compare-label compare-label-after">
+                    After
+                </span>
+
+                <div class="compare-divider">
+                    <span>&#8596;</span>
+                </div>
+
+            </div>
+
+            <input class="compare-range"
+                   type="range"
+                   min="0"
+                   max="100"
+                   value="50"
+                   aria-label="Compare original and edited images">
+
+        </div>
+    </div>
+
+
+    <!-- Crop and Resize Modal -->
+    <div id="crop-modal" class="crop-modal" hidden>
+
+        <div class="crop-panel"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="crop-title">
+
+            <div class="crop-header">
+                <h2 id="crop-title">Crop &amp; Resize</h2>
+
+                <button type="button"
+                        id="crop-close"
+                        class="crop-close"
+                        aria-label="Close">
+                    &times;
+                </button>
+            </div>
+
+            <p class="crop-description">
+                Drag across the image to select the area you want to keep.
+            </p>
+
+            
+<div class="crop-target-control">
+    <p>What do you want to adjust?</p>
+
+    <div class="crop-target-options">
+        <label>
+            <input type="radio"
+                   name="crop-target"
+                   value="background"
+                   checked>
+            <span>Background only</span>
+        </label>
+
+        <label>
+            <input type="radio"
+                   name="crop-target"
+                   value="whole-image">
+            <span>Entire image</span>
+        </label>
+    </div>
+
+    <p class="crop-target-hint" id="crop-target-hint">
+        Crop or resize the replacement background without changing the subject.
+    </p>
+</div>
+
+
+            <div id="crop-stage" class="crop-stage">
+                <img id="crop-image" alt="Image to crop">
+
+                <div id="crop-selection"
+                     class="crop-selection"
+                     hidden></div>
+            </div>
+
+            <div class="crop-controls">
+
+                <label>
+                    Crop ratio
+
+                    <select id="crop-ratio">
+                        <option value="free">Free</option>
+                        <option value="1:1">Square (1:1)</option>
+                        <option value="4:3">Landscape (4:3)</option>
+                        <option value="3:4">Portrait (3:4)</option>
+                        <option value="16:9">Widescreen (16:9)</option>
+                        <option value="9:16">Vertical (9:16)</option>
+                    </select>
+                </label>
+
+                <label>
+                    Output width (px)
+
+                    <input id="crop-width"
+                           type="number"
+                           min="1"
+                           max="10000"
+                           value="1080">
+                </label>
+
+                <label>
+                    Output height (px)
+
+                    <input id="crop-height"
+                           type="number"
+                           min="1"
+                           max="10000"
+                           value="1080">
+                </label>
+
+            </div>
+
+            <p id="crop-status"
+               class="crop-status"
+               aria-live="polite">
+                Select an area of the image to crop.
+            </p>
+
+            <div class="crop-actions">
+                <button type="button" id="crop-reset">
+                    Reset Selection
+                </button>
+
+                <button type="button" id="crop-apply">
+                    Apply Crop &amp; Resize
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+<div id="erase-modal" class="erase-modal" hidden>
+
+<section id="erase-editor" class="erase-editor" hidden>
+    <h3>Erase &amp; Restore</h3>
+
+    <p>Brush over the image to erase unwanted areas or restore original pixels.</p>
+
+    <div class="erase-toolbar">
+        <button type="button" data-mode="erase" class="active">
+            Erase
+        </button>
+
+        <button type="button" data-mode="restore">
+            Restore
+        </button>
+    </div>
+
+    <label class="erase-control">
+        <span>
+            Brush size: <strong id="erase-size-value">30</strong> px
+        </span>
+        <input id="erase-brush-size" type="range"
+               min="5" max="100" value="30">
+    </label>
+
+    <label class="erase-control">
+        <span>
+            Softness: <strong id="erase-softness-value">30</strong>%
+        </span>
+        <input id="erase-brush-softness" type="range"
+               min="0" max="100" value="30">
+    </label>
+
+    <div class="erase-actions">
+        <button type="button" data-action="cancel">Cancel</button>
+
+        <button type="button" data-action="apply" class="apply-edits">
+            Apply edits
+        </button>
+    </div>
+</section>
+</div>
+
+
+
 </body>
 </html>

@@ -6,3 +6,4 @@ pillow
 rembg[cpu]
 requests
 trimesh
+python-dotenv
