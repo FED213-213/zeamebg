@@ -56,8 +56,12 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["GET", "POST"],
+    allow_origins=[
+        "https://zeamebg.vercel.app",
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+    ],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -332,7 +336,7 @@ def unsplash_request(
 
 
 def unsplash_image_url(photo_id: str, request: Request) -> str:
-    base_url = str(request.base_url).rstrip("/")
+    base_url = "https://zearome-zeamebg.ms.fun"
     return f"{base_url}/unsplash/image/{photo_id}"
 
 

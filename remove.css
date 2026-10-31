@@ -330,7 +330,7 @@ margin-bottom: 0;
 .solved{
     width: 100%;
     
-   padding-top: 25vh;
+   padding-top: 10vh;
    margin-bottom: 40px;
    max-width: 100%;
 }
@@ -1525,7 +1525,7 @@ margin-bottom: 0;
 }
 .solved{
     width: 100%;
-    padding-top: 18vh;
+    padding-top: 10vh;
     max-width: 100%;
 }
 .thought{
