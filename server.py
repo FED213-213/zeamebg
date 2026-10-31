@@ -386,6 +386,11 @@ async def remove_bg(
 # Replace background with color
 # --------------------------------
 
+
+# --------------------------------
+# Replace background with color
+# --------------------------------
+
 @app.post("/replace-color")
 async def replace_color(
     file: UploadFile = File(...),
@@ -395,19 +400,22 @@ async def replace_color(
     rgb = parse_hex_color(color)
 
     def process():
-        image = decode_image(data)
-        cutout = remove_background(image)
+        cutout = decode_image(data).convert("RGBA")
 
+        # Create the selected background.
         background = Image.new(
             "RGBA",
             cutout.size,
             rgb + (255,),
         )
 
+        # Composite the existing cutout; do not run AI again.
         result = Image.alpha_composite(background, cutout)
+
         return image_response(result, "png")
 
     return await run_in_threadpool(process)
+
 
 
 # --------------------------------
@@ -482,6 +490,11 @@ def fit_background(
 # Replace background with image
 # --------------------------------
 
+
+# --------------------------------
+# Replace background with image
+# --------------------------------
+
 @app.post("/replace-bg")
 async def replace_bg(
     file: UploadFile = File(...),
@@ -494,14 +507,12 @@ async def replace_bg(
             "Invalid fit mode. Choose cover, contain, or stretch.",
         )
 
-    original_data = await read_upload(file)
+    cutout_data = await read_upload(file)
     background_data = await read_upload(background_file)
 
     def process():
-        original = decode_image(original_data)
-        background = decode_image(background_data)
-
-        cutout = remove_background(original)
+        cutout = decode_image(cutout_data).convert("RGBA")
+        background = decode_image(background_data).convert("RGBA")
 
         fitted_background = fit_background(
             background,
@@ -509,23 +520,20 @@ async def replace_bg(
             fit,
         )
 
-        # Keep the final background opaque, including contain-mode
-        # areas that would otherwise be transparent.
-        white_canvas = Image.new(
+        # Keep the final background opaque.
+        canvas = Image.new(
             "RGBA",
             cutout.size,
             (255, 255, 255, 255),
         )
-        white_canvas.alpha_composite(fitted_background)
+        canvas.alpha_composite(fitted_background)
 
-        result = Image.alpha_composite(
-            white_canvas,
-            cutout,
-        )
+        result = Image.alpha_composite(canvas, cutout)
 
         return image_response(result, "png")
 
     return await run_in_threadpool(process)
+
 
 
 # --------------------------------

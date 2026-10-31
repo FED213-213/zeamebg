@@ -657,10 +657,29 @@ async function processImage(endpoint, extraFields = {}, options = {}) {
             button.innerHTML = "Processing...";
         });
 
-        const file = await getImageFile(
-            options.fileName || "image.png",
-            Boolean(options.useCurrentResult)
-        );
+let file;
+
+if (options.useCutout) {
+    // Reuse the transparent cutout already created for this image.
+    const cutoutBlob = endpoint === "/replace-color"
+        ? await getColorCutout().then(() => colorCutoutBlob)
+        : await getBackgroundCutout().then(() => bgCutoutBlob);
+
+    if (!cutoutBlob) {
+        throw new Error("Could not prepare the transparent cutout.");
+    }
+
+    file = new File(
+        [cutoutBlob],
+        "cutout.png",
+        { type: "image/png" }
+    );
+} else {
+    file = await getImageFile(
+        options.fileName || "image.png",
+        Boolean(options.useCurrentResult)
+    );
+}
 
         const formData = new FormData();
         formData.append("file", file);
@@ -773,7 +792,6 @@ async function processImage(endpoint, extraFields = {}, options = {}) {
         });
     }
 }
-
 
 
 
@@ -1272,7 +1290,10 @@ $("#apply-color")?.addEventListener("click", async () => {
     await processImage(
         "/replace-color",
         { color },
-        { fileName: "image.png" }
+        {
+    fileName: "image.png",
+    useCutout: true
+}
     );
 });
 
@@ -2227,8 +2248,9 @@ $("#apply-replace-bg")?.addEventListener("click", async () => {
             fit: backgroundFitMode
         },
         {
-            fileName: "image.png"
-        }
+    fileName: "image.png",
+    useCutout: true
+}
     );
 });
 
