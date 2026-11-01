@@ -1,4 +1,56 @@
-# Python virtual environment
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# AI models and model weights
+*.onnx
+*.pt
+*.pth
+*.safetensors
+*.bin
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Local development settings
+.vscode/
+.idea/
+
+# Generated images and temporary files
+removed-bg/
+uploads/
+outputs/
+temp/
+tmp/
+
+# Logs
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+
+modelscope/
+
+
+# Rust build files
+target/
+
+# ModelScope deployment duplicates
+modelscope/
+
+# Python virtual environments
 .venv/
 venv/
 env/
@@ -7,16 +59,15 @@ env/
 __pycache__/
 *.py[cod]
 
-# AI models
-*.onnx
-
 # Environment variables and secrets
 .env
 .env.*
+!.env.example
 
-# Local development files
+# Generated files
+*.log
 .DS_Store
 Thumbs.db
+desktop.ini
 
-
-modelscope/
+removed-bg.png

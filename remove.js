@@ -1,4 +1,4 @@
-const API_URL = "https://zearome-zeamebg.ms.fun";
+const API_URL = "http://127.0.0.1:8001";
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -401,7 +401,7 @@ function setCurrentImage(originalBlob, resultBlob = null, name = "image.png") {
 
     // Keep the rest of your existing function below this point.
 
-    clearBackgroundCutoutCache();
+    clearSharedCutoutCache();
 
     currentOriginalBlob = originalBlob;
     currentResultBlob = resultBlob || originalBlob;
@@ -660,10 +660,8 @@ async function processImage(endpoint, extraFields = {}, options = {}) {
 let file;
 
 if (options.useCutout) {
-    // Reuse the transparent cutout already created for this image.
-    const cutoutBlob = endpoint === "/replace-color"
-        ? await getColorCutout().then(() => colorCutoutBlob)
-        : await getBackgroundCutout().then(() => bgCutoutBlob);
+    // Reuse the shared transparent cutout.
+    await getSharedCutout();
 
     if (!cutoutBlob) {
         throw new Error("Could not prepare the transparent cutout.");
@@ -695,6 +693,15 @@ if (options.useCutout) {
                 formData.append(key, String(value));
             }
         }
+
+
+        console.log("Processing endpoint:", endpoint);
+    console.log("Original image:", currentOriginalBlob);
+    console.log("Cutout enabled:", options.useCutout);
+    console.log("Cutout file:", file);
+    console.log("Cutout size:", file.size);
+    console.log("Cutout type:", file.type);
+
 
         const response = await fetch(`${API_URL}${endpoint}`, {
             method: "POST",
@@ -839,9 +846,7 @@ const pickerPreview = $("#picker-color-preview");
 const pickerHexPreview = $("#picker-hex-preview");
 
 // Temporary live color preview
-let colorCutoutSourceBlob = null;
-let colorCutoutBlob = null;
-let colorCutoutImage = null;
+
 let liveColorPreviewUrl = null;
 let colorLivePreviewEnabled = false;
 let colorPreviewRenderId = 0;
@@ -952,94 +957,90 @@ function updatePickerAppearance() {
     }
 }
 
+// Shared cutout cache — declare these only once.
+let cutoutSourceBlob = null;
+let cutoutBlob = null;
+let cutoutImage = null;
+let cutoutPromise = null;
 
-
-let colorCutoutPromise = null;
-
-async function getColorCutout() {
+// One shared function for both colour and image backgrounds.
+async function getSharedCutout() {
     if (!currentOriginalBlob) {
         throw new Error("Upload an image first.");
     }
 
     const sourceBlob = currentOriginalBlob;
 
-    // Reuse the transparent cutout if it already exists.
-    if (
-        colorCutoutSourceBlob === sourceBlob &&
-        colorCutoutImage
-    ) {
-        return colorCutoutImage;
+    if (cutoutSourceBlob === sourceBlob && cutoutImage) {
+        return cutoutImage;
     }
 
-    // Reuse an existing request instead of starting another.
-    if (
-        colorCutoutSourceBlob === sourceBlob &&
-        colorCutoutPromise
-    ) {
-        return colorCutoutPromise;
+    if (cutoutSourceBlob === sourceBlob && cutoutPromise) {
+        return cutoutPromise;
     }
 
-    colorCutoutSourceBlob = sourceBlob;
+    clearSharedCutoutCache();
+    cutoutSourceBlob = sourceBlob;
 
-    colorCutoutPromise = (async () => {
-        // Reuse a previously removed background when available.
-        let cutoutBlob = null;
+    cutoutPromise = (async () => {
+        const formData = new FormData();
+        formData.append("file", sourceBlob, "image.png");
 
-        if (
-            currentResultBlob &&
-            currentResultBlob !== sourceBlob &&
-            currentResultBlob.type === "image/png"
-        ) {
-            cutoutBlob = currentResultBlob;
-        }
+        const response = await fetch(`${API_URL}/remove-bg`, {
+            method: "POST",
+            body: formData
+        });
 
-        if (!cutoutBlob) {
-            const formData = new FormData();
-            formData.append("file", sourceBlob, "image.png");
-
-            const response = await fetch(
-                `${API_URL}/remove-bg`,
-                {
-                    method: "POST",
-                    body: formData
-                }
+        if (!response.ok) {
+            throw new Error(
+                `Background removal failed (${response.status}).`
             );
-
-            if (!response.ok) {
-                throw new Error(
-                    `Background removal failed (${response.status}).`
-                );
-            }
-
-            cutoutBlob = await response.blob();
         }
 
-        const image = await createImageBitmap(cutoutBlob);
+        const blob = await response.blob();
 
-        if (colorCutoutSourceBlob !== sourceBlob) {
+        if (!blob.type.startsWith("image/")) {
+            throw new Error("The server did not return a valid cutout.");
+        }
+
+        const image = await createImageBitmap(blob);
+
+        if (cutoutSourceBlob !== sourceBlob) {
             image.close();
             throw new Error("The selected image changed.");
         }
 
-        colorCutoutBlob = cutoutBlob;
-        colorCutoutImage = image;
+        cutoutBlob = blob;
+        cutoutImage = image;
 
         return image;
     })();
 
     try {
-        return await colorCutoutPromise;
+        return await cutoutPromise;
     } catch (error) {
-        if (colorCutoutSourceBlob === sourceBlob) {
-            colorCutoutSourceBlob = null;
+        if (cutoutSourceBlob === sourceBlob) {
+            clearSharedCutoutCache();
         }
         throw error;
     } finally {
-        if (colorCutoutSourceBlob === sourceBlob) {
-            colorCutoutPromise = null;
+        if (cutoutSourceBlob === sourceBlob) {
+            cutoutPromise = null;
         }
     }
 }
+
+function clearSharedCutoutCache() {
+    if (cutoutImage) {
+        cutoutImage.close();
+    }
+
+    cutoutImage = null;
+    cutoutBlob = null;
+    cutoutPromise = null;
+    cutoutSourceBlob = null;
+}
+
 
 
 async function renderLiveColorPreview(color) {
@@ -1050,7 +1051,7 @@ async function renderLiveColorPreview(color) {
     const renderId = ++colorPreviewRenderId;
 
     try {
-        const cutout = await getColorCutout();
+        const cutout = await getSharedCutout();
 
         // Ignore an outdated render if the user has moved the picker again.
         if (
@@ -1110,11 +1111,13 @@ async function renderLiveColorPreview(color) {
     }
 }
 
+
+
+
 function restoreColorPreview() {
     colorLivePreviewEnabled = false;
     colorPreviewRenderId++;
 
-    // Return to the last saved result.
     if (preview && currentResultUrl) {
         preview.src = currentResultUrl;
     }
@@ -1124,14 +1127,8 @@ function restoreColorPreview() {
         liveColorPreviewUrl = null;
     }
 
-    // Discard the temporary cutout cache.
-    if (colorCutoutImage) {
-        colorCutoutImage.close();
-    }
-
-    colorCutoutImage = null;
-    colorCutoutBlob = null;
-    colorCutoutSourceBlob = null;
+    // Keep the transparent cutout cached.
+    // It will be reused for the next colour change.
 }
 
 
@@ -1330,10 +1327,7 @@ let appliedBackgroundColor = "#FFFFFF";
 
 
 // Live background preview cache
-let bgCutoutSourceBlob = null;
-let bgCutoutBlob = null;
-let bgCutoutPromise = null;
-let bgCutoutImage = null;
+
 
 let bgLivePreviewUrl = null;
 let bgPreviewRenderId = 0;
@@ -1341,93 +1335,6 @@ let bgLivePreviewEnabled = false;
 
 
 
-
-async function getBackgroundCutout() {
-    if (!currentOriginalBlob) {
-        throw new Error("Upload an image first.");
-    }
-
-    const sourceBlob = currentOriginalBlob;
-
-    // Reuse the cutout for the same original image.
-    if (
-        bgCutoutSourceBlob === sourceBlob &&
-        bgCutoutImage
-    ) {
-        return bgCutoutImage;
-    }
-
-    // Avoid sending duplicate requests to the backend.
-    if (
-        bgCutoutSourceBlob === sourceBlob &&
-        bgCutoutPromise
-    ) {
-        return bgCutoutPromise;
-    }
-
-    // Invalidate any previous image's cache.
-    if (bgCutoutImage) {
-        bgCutoutImage.close();
-    }
-
-    bgCutoutImage = null;
-    bgCutoutBlob = null;
-    bgCutoutSourceBlob = sourceBlob;
-
-    bgCutoutPromise = (async () => {
-        const formData = new FormData();
-        formData.append("file", sourceBlob, "image.png");
-
-        const response = await fetch(`${API_URL}/remove-bg`, {
-            method: "POST",
-            body: formData
-        });
-
-        if (!response.ok) {
-            let message = `Background removal failed (${response.status}).`;
-
-            try {
-                const data = await response.json();
-                message = data.detail || message;
-            } catch {}
-
-            throw new Error(message);
-        }
-
-        const blob = await response.blob();
-
-        if (!blob.type.startsWith("image/")) {
-            throw new Error("The server did not return a valid cutout.");
-        }
-
-        const image = await createImageBitmap(blob);
-
-        // The user may have switched images during processing.
-        if (bgCutoutSourceBlob !== sourceBlob) {
-            image.close();
-            throw new Error("The selected image changed.");
-        }
-
-        bgCutoutBlob = blob;
-        bgCutoutImage = image;
-
-        return image;
-    })();
-
-    try {
-        return await bgCutoutPromise;
-    } catch (error) {
-        if (bgCutoutSourceBlob === sourceBlob) {
-            bgCutoutSourceBlob = null;
-        }
-
-        throw error;
-    } finally {
-        if (bgCutoutSourceBlob === sourceBlob) {
-            bgCutoutPromise = null;
-        }
-    }
-}
 
 
 async function renderLiveBackgroundPreview() {
@@ -1443,7 +1350,7 @@ async function renderLiveBackgroundPreview() {
 
     try {
         // Get the foreground with its background removed.
-        const cutout = await getBackgroundCutout();
+        const cutout = await getSharedCutout();
 
         if (
             renderId !== bgPreviewRenderId ||
@@ -1592,7 +1499,7 @@ async function createCompositeForCrop() {
     }
 
     // Obtain the transparent subject from the ORIGINAL uploaded image.
-    const cutout = await getBackgroundCutout();
+    const cutout = await getSharedCutout();
 
     let background = null;
 
@@ -1711,17 +1618,6 @@ function stopLiveBackgroundPreview() {
     }
 }
 
-
-function clearBackgroundCutoutCache() {
-    if (bgCutoutImage) {
-        bgCutoutImage.close();
-    }
-
-    bgCutoutImage = null;
-    bgCutoutBlob = null;
-    bgCutoutPromise = null;
-    bgCutoutSourceBlob = null;
-}
 
 
 let backgroundPage = 1;
@@ -2798,7 +2694,7 @@ async function createBackgroundOnlyForCrop() {
     // No replacement yet: extract the visible original
     // background without including the subject.
     const original = await createImageBitmap(currentOriginalBlob);
-    const cutout = await getBackgroundCutout();
+    const cutout = await getSharedCutout();
 
     try {
         const canvas = document.createElement("canvas");
