@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8001";
+const API_URL = "https://zeamebg.onrender.com";
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
